@@ -98,24 +98,24 @@
                 new Point(offsetX + sideLength / 2, offsetY + height - inset * Math.tan(60 * degreesToRadians))
             ]
 
-            const formatArc = (pointTo, roundness) => {
+            const formatArc = (pointTo, roundness, reversed) => {
                 const radius = roundness * Math.tan(30 * degreesToRadians);
-                return `${radius} ${radius}, 0 0 1, ${pointTo.format()}`
+                return `${radius} ${radius}, 0 0 ${reversed ? '0': '1'}, ${pointTo.format()}`
             }
-            const formatSide = (a, b, c, roundness) => `
+            const formatSide = (a, b, c, roundness, reversed) => `
                 L ${b.moveTo(a, roundness).format()}
-                A ${formatArc(b.moveTo(c, roundness), roundness)}
+                A ${formatArc(b.moveTo(c, roundness), roundness, reversed)}
             `;
-            const formatSmoothTriangle = (pointA, pointB, pointC, roundness) => {
+            const formatSmoothTriangle = (pointA, pointB, pointC, roundness, reversed = false) => {
                 return `M ${pointA.moveTo(pointB, roundness).format()} 
-                ${formatSide(pointA, pointB, pointC, roundness)}
-                ${formatSide(pointB, pointC, pointA, roundness)}
-                ${formatSide(pointC, pointA, pointB, roundness)}Z `
+                ${formatSide(pointA, pointB, pointC, roundness, reversed)}
+                ${formatSide(pointB, pointC, pointA, roundness, reversed)}
+                ${formatSide(pointC, pointA, pointB, roundness, reversed)}Z `
             }
 
             const path =
                 `${formatSmoothTriangle(points[0], points[1], points[2], roundness)}
-                ${formatSmoothTriangle(pointsInset[0], pointsInset[2], pointsInset[1], innerRoundness)}`;
+                ${formatSmoothTriangle(pointsInset[0], pointsInset[2], pointsInset[1], innerRoundness, true)}`;
 
             pathElement.setAttribute("d", path)
         }
